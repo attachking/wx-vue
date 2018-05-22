@@ -1,5 +1,5 @@
 <template>
-  <div class="container" @click="clickHandle('test click', $event)">
+  <div class="container">
 
     <div class="userinfo" @click="bindViewTap">
       <img class="userinfo-avatar" v-if="userInfo.avatarUrl" :src="userInfo.avatarUrl" background-size="cover"/>
@@ -13,29 +13,37 @@
         <card :text="motto"></card>
       </div>
     </div>
-    <form class="form-container">
-      <select name="" id="">
-        <option value="">请选择</option>
-      </select>
-      <input type="text" class="form-control" v-model="motto" placeholder="v-model"/>
-      <input type="text" class="form-control" v-model.lazy="motto" placeholder="v-model.lazy"/>
+    <form class="form-container" @submit="handleSubmit">
+      <input type="text" class="form-control" v-model="motto" placeholder="v-model" name="input1"/>
+      <input type="text" class="form-control" v-model.lazy="motto" placeholder="v-model.lazy" name="input2"/>
+      <multi-picker v-model="city" :list="dictionaries.cities" :multi="4" placeholder="请选择城市"></multi-picker>
+      <button form-type="submit">模拟提交</button>
     </form>
     <a href="/pages/counter/main" class="counter">去往Vuex示例页面</a>
   </div>
 </template>
 
 <script>
-  import card from '@/components/card'
+  import card from '../../components/card.vue'
+  import MultiPicker from '../../components/multi-picker.vue'
+  import {mapGetters} from 'vuex'
 
   export default {
+    computed: {
+      ...mapGetters([
+        'dictionaries'
+      ])
+    },
     data () {
       return {
         motto: 'Hello World',
-        userInfo: {}
+        userInfo: {},
+        city: '94'
       }
     },
 
     components: {
+      MultiPicker,
       card
     },
 
@@ -56,23 +64,21 @@
           }
         })
       },
-      clickHandle (msg, ev) {
-        console.log('clickHandle:', msg, ev)
+      handleSubmit(e) {
+        console.log(e)
       }
     },
 
     onPullDownRefresh() {
-      console.log(111)
-      setTimeout(() => {
-        wx.stopPullDownRefresh()
-        wx.showToast({
-          title: '刷新成功',
-          icon: 'success'
-        })
-      }, 2000)
+      this.$pullDown(function(done) {
+        setTimeout(() => {
+          done()
+        }, 2000)
+      })
     },
 
     created () {
+      console.log('created')
       // 调用应用实例的方法获取全局数据
       this.getUserInfo()
     }

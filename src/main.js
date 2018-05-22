@@ -1,8 +1,11 @@
 import Vue from 'vue'
 import store from './store'
 import App from './App.vue'
+import base from './common/js/base'
 
+Vue.use(base)
 Vue.config.productionTip = false
+// 将$store绑定到Vue的原型链上，才能正常使用{mapGetters, mapMutations, matActions}
 Vue.prototype.$store = store
 App.mpType = 'app'
 const app = new Vue(App)

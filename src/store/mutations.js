@@ -6,6 +6,9 @@ const mutations = {
   },
   [types.SET_COUNT](state, o) {
     state.count = o
+  },
+  [types.SET_DICTIONARIES](state, o) {
+    state.dictionaries = o
   }
 }
 
