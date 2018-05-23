@@ -13,7 +13,7 @@
         default: []
       },
       value: {
-        type: String,
+        type: null,
         default: ''
       },
       multi: { // 表示n级选择器
@@ -31,7 +31,7 @@
         range: [],
         selected: [],
         selectedId: [],
-        cityName: '请选择地区',
+        cityName: '',
         cityCode: ''
       }
     },
@@ -51,7 +51,7 @@
         let cities = this.cities
         let selectedId = []
         function init(id) {
-          let index = cities.findIndex(item => item.id === id)
+          let index = cities.findIndex(item => item.id === id + '')
           if (index !== -1) {
             selectedId.unshift(cities[index].id)
             init(cities[index].pid)
@@ -112,7 +112,7 @@
       },
       setDictionary() { // 设置字典表（初始化）
         this.cities = this.list
-        this.handleInit(this.value)
+        this.handleInit(this.value + '')
       },
       setCityName() { // 设置页面显示值
         let selectedId = this.selectedId

@@ -5,8 +5,7 @@ const app = new Vue(App)
 app.$mount()
 export default {
   config: {
-    'navigationBarTitleText': '首页',
-    'backgroundTextStyle': 'dark',
-    'enablePullDownRefresh': true
+    'navigationBarTitleText': '登录',
+    'backgroundTextStyle': 'dark'
   }
 }
