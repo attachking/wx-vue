@@ -51,6 +51,8 @@
 </script>
 
 <style lang="scss">
+  @import "common/style/form";
+
   .container {
     height: 100%;
     display: flex;

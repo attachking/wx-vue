@@ -149,5 +149,16 @@ export default {
         }
       })
     }
+    Vue.prototype.$router = {
+      push(url) {
+        wx.navigateTo({url})
+      },
+      replace(url) {
+        wx.redirectTo({url})
+      },
+      back(delta = 1) {
+        wx.navigateBack({delta})
+      }
+    }
   }
 }

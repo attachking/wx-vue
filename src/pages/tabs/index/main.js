@@ -6,7 +6,6 @@ app.$mount()
 export default {
   config: {
     'navigationBarTitleText': '首页',
-    'backgroundTextStyle': 'dark',
     'enablePullDownRefresh': true
   }
 }

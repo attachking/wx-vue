@@ -24,8 +24,8 @@
 </template>
 
 <script>
-  import card from '../../components/card.vue'
-  import MultiPicker from '../../components/multi-picker.vue'
+  import card from '../../../components/card.vue'
+  import MultiPicker from '../../../components/multi-picker.vue'
   import {mapGetters} from 'vuex'
 
   export default {
@@ -86,7 +86,7 @@
 </script>
 
 <style scoped lang="scss">
-  @import "../../common/style/variables";
+  @import "../../../common/style/variables";
 
   .userinfo {
     display: flex;
