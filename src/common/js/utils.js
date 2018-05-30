@@ -1,4 +1,5 @@
-export const BASE_URL = 'http://192.168.1.11:9339'
+export const BASE_URL = 'https://661973658.chenjiyuan.club'
+export const STATIC_URL = 'http://192.168.1.11:8118/zzu/p/page/'
 
 // 时间格式化方法
 export function dateFormat(date, fmt) {

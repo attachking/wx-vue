@@ -1,4 +1,4 @@
-import {BASE_URL} from './utils'
+import {BASE_URL, dateFormat} from './utils'
 
 export default {
   install(Vue) {
@@ -106,19 +106,9 @@ export default {
         })
       })
     }
-    Vue.prototype.$pullDown = function(c) {
-      if (typeof c === 'function') {
-        c(() => {
-          wx.stopPullDownRefresh()
-        })
-      }
-    }
     /*
     {
-      name: [{
-        required: true,
-        msg: '请输入姓名'
-      }, function(value) {
+      name: [{required: true, msg: '请输入姓名'}, function(value) {
         if (/^[a-z]{1,12}$/i.test(value)) {
           return true
         } else {
@@ -127,27 +117,43 @@ export default {
       }]
     }
     */
-    Vue.prototype.$validate = function(rules, values) {
-      return new Promise((resolve, reject) => {
-        try {
-          for (let i in rules) {
-            if (rules.hasOwnProperty(i)) {
-              let rule = rules[i]
-              rule.forEach(item => {
-                if (item.required && !values[i] && values[i] !== 0) {
-                  resolve({status: 0, msg: item.msg})
-                } else if (typeof item === 'function') {
-                  let result = item(values[i])
-                  result instanceof Error && resolve({status: 0, msg: result.message})
-                }
-              })
+    Vue.prototype.$form = {
+      validate(rules, values) {
+        return new Promise((resolve, reject) => {
+          try {
+            for (let i in rules) {
+              if (rules.hasOwnProperty(i)) {
+                let rule = rules[i]
+                rule.forEach(item => {
+                  if (item.required && !values[i] && values[i] !== 0) {
+                    resolve({status: 0, msg: item.msg})
+                  } else if (typeof item === 'function') {
+                    let result = item(values[i])
+                    result instanceof Error && resolve({status: 0, msg: result.message})
+                  }
+                })
+              }
             }
+            resolve({status: 1})
+          } catch (err) {
+            reject(err)
           }
-          resolve({status: 1})
-        } catch (err) {
-          reject(err)
+        })
+      },
+      reset(obj) { // 表单重置
+        for (let i in obj) {
+          if (obj.hasOwnProperty(i) && i !== 'rowsNum' && i !== 'currentPage') {
+            obj[i] = ''
+          }
         }
-      })
+      },
+      echo(target, resource) { // 表单回显
+        for (let i in target) {
+          if (target.hasOwnProperty(i)) {
+            target[i] = resource[i] || ''
+          }
+        }
+      }
     }
     Vue.prototype.$router = {
       push(url) {
@@ -158,7 +164,11 @@ export default {
       },
       back(delta = 1) {
         wx.navigateBack({delta})
+      },
+      switchTab(url) {
+        wx.switchTab({url})
       }
     }
+    Vue.prototype.$dateFormat = dateFormat
   }
 }

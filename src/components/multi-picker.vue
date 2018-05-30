@@ -1,6 +1,6 @@
 <template>
   <picker :range="range" :value="selected" mode="multiSelector" range-key="name" @columnchange="handleColumnChange" @change="handlePicker">
-    <span>{{cityName}}</span>
+    <span class="multi-picker-text">{{cityName}}</span>
   </picker>
 </template>
 <script>
@@ -23,6 +23,10 @@
       placeholder: {
         type: String,
         default: '请选择'
+      },
+      last: {
+        type: Boolean, // 是否只显示最后一项
+        default: false
       }
     },
     data() {
@@ -116,7 +120,7 @@
       },
       setCityName() { // 设置页面显示值
         let selectedId = this.selectedId
-        if (!selectedId.length) {
+        if (!selectedId.length || !this.value) {
           this.cityName = this.placeholder
           return
         }
@@ -124,7 +128,11 @@
         for (let i = 0; i < selectedId.length; i++) {
           name.push(this.cities[this.cities.findIndex(item => item.id === this.selectedId[i])].name)
         }
-        this.cityName = name.join(' ')
+        if (this.last) {
+          this.cityName = name[name.length - 1]
+        } else {
+          this.cityName = name.join(' ')
+        }
       }
     },
     created() {
@@ -144,3 +152,15 @@
     }
   }
 </script>
+<style>
+  picker{
+    max-width: 90%;
+  }
+  .multi-picker-text{
+    display: inline-block;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    width: 100%;
+  }
+</style>

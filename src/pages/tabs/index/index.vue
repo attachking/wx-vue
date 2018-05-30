@@ -1,30 +1,30 @@
 <template>
   <div class="container">
-
-    <div class="userinfo" @click="bindViewTap">
-      <img class="userinfo-avatar" v-if="userInfo.avatarUrl" :src="userInfo.avatarUrl" background-size="cover"/>
-      <div class="userinfo-nickname">
-        <card :text="userInfo.nickName"></card>
+    <div class="title">
+      <div class="text">郑大就创业</div>
+      <div class="input">
+        <icon type="search"></icon>
+        <input v-model="keyWords" type="text" placeholder="搜索职位名/单位名/行业类别" confirm-type="search" @confirm="submit">
       </div>
     </div>
-
-    <div class="usermotto">
-      <div class="user-motto">
-        <card :text="motto"></card>
+    <div class="selects">
+      <div class="select">
+        <multi-picker placeholder="职位类别" :multi="3" :list="dictionaries.positions" v-model="searchData.bca111" last></multi-picker>
+        <image src="../../../static/img/arrow-down.png" class="arrow"></image>
+      </div>
+      <div class="select">
+        <multi-picker placeholder="工作地区" :multi="2" :list="dictionaries.cities" v-model="searchData.acb202"></multi-picker>
+        <image src="../../../static/img/arrow-down.png" class="arrow"></image>
+      </div>
+      <div class="select">
+        <multi-picker placeholder="工作性质" :list="dictionaries.nature" v-model="searchData.aab019"></multi-picker>
+        <image src="../../../static/img/arrow-down.png" class="arrow"></image>
       </div>
     </div>
-    <form class="form-container" @submit="handleSubmit">
-      <input type="text" class="form-control" v-model="motto" placeholder="v-model" name="input1"/>
-      <input type="text" class="form-control" v-model.lazy="motto" placeholder="v-model.lazy" name="input2"/>
-      <multi-picker v-model="city" :list="dictionaries.cities" :multi="4" placeholder="请选择城市"></multi-picker>
-      <button form-type="submit">模拟提交</button>
-    </form>
-    <a href="/pages/counter/main" class="counter">去往Vuex示例页面</a>
   </div>
 </template>
 
 <script>
-  import card from '../../../components/card.vue'
   import MultiPicker from '../../../components/multi-picker.vue'
   import {mapGetters} from 'vuex'
 
@@ -36,51 +36,52 @@
     },
     data () {
       return {
-        motto: 'Hello World',
-        userInfo: {},
-        city: '94'
+        searchData: {
+          rowsNum: 10,
+          currentPage: 1,
+          bca111: '', // 职位类别
+          acb202: '', // 地区
+          aab019: '' // 工作性质
+        },
+        pageBean: {},
+        keyWords: '',
+        list: [],
+        loading: false
       }
     },
 
     components: {
-      MultiPicker,
-      card
+      MultiPicker
     },
 
     methods: {
-      bindViewTap () {
-        const url = '../logs/main'
-        wx.navigateTo({url})
-      },
-      getUserInfo () {
-        // 调用登录接口
-        wx.login({
-          success: () => {
-            wx.getUserInfo({
-              success: (res) => {
-                this.userInfo = res.userInfo
-              }
-            })
+      getList () {
+        if (this.loading) return
+        this.loading = true
+        this.$post('/service/business/college/corp/newPosition/queryPositionList.xf', this.searchData).then(res => {
+          this.loading = false
+          this.pageBean = res.data.pageBean
+          if (this.pageBean.currentPage === 1) {
+            this.list = res.data.result
+          } else {
+            this.list = this.list.concat(res.data.result)
           }
+        }).catch(() => {
+          this.loading = false
         })
       },
-      handleSubmit(e) {
-        console.log(e)
+      selectChange() {
+        setTimeout(() => {
+          this.searchData.currentPage = 1
+          this.getList()
+        }, 20)
       }
     },
 
-    onPullDownRefresh() {
-      this.$pullDown(function(done) {
-        setTimeout(() => {
-          done()
-        }, 2000)
-      })
-    },
-
     created () {
-      console.log('created')
-      // 调用应用实例的方法获取全局数据
-      this.getUserInfo()
+      this.getList()
+      this.$watch('searchData.bca111', this.selectChange)
+      this.$watch('searchData.acb202', this.selectChange)
     }
   }
 </script>
@@ -88,39 +89,47 @@
 <style scoped lang="scss">
   @import "../../../common/style/variables";
 
-  .userinfo {
+  .title {
+    background: $theme;
     display: flex;
     flex-direction: column;
+    justify-content: center;
     align-items: center;
+    padding: 0 0 30rpx 0;
+    .text {
+      color: #fff;
+      font-size: 40rpx;
+      padding: 10rpx 0 20rpx 0;
+    }
+    .input {
+      width: 80%;
+      border: 1rpx solid #d9d9d9;
+      border-radius: 20rpx;
+      display: flex;
+      padding: 8rpx 10rpx;
+      background: #fff;
+      align-items: center;
+      font-size: 28rpx;
+      input {
+        flex-grow: 1;
+      }
+    }
   }
-
-  .userinfo-avatar {
-    width: 128rpx;
-    height: 128rpx;
-    margin: 20rpx;
-    border-radius: 50%;
+  .selects{
+    display: flex;
+    font-size: 28rpx;
+    .select{
+      width: 33.3%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      picker{
+        max-width: 80%;
+      }
+    }
   }
-
-  .userinfo-nickname {
-    color: $theme;
-  }
-
-  .usermotto {
-    margin-top: 150px;
-  }
-
-  .form-control {
-    display: block;
-    padding: 0 12px;
-    margin-bottom: 5px;
-    border: 1px solid #ccc;
-  }
-
-  .counter {
-    display: inline-block;
-    margin: 10px auto;
-    padding: 5px 10px;
-    color: blue;
-    border: 1px solid blue;
+  .arrow{
+    width: 30rpx;
+    height: 30rpx;
   }
 </style>
