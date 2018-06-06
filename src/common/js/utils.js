@@ -1,4 +1,4 @@
-export const BASE_URL = 'https://661973658.chenjiyuan.club'
+export const BASE_URL = 'http://192.168.1.11:9009' // https://661973658.chenjiyuan.club
 export const STATIC_URL = 'http://192.168.1.11:8118/zzu/p/page/'
 
 // 时间格式化方法
@@ -24,4 +24,17 @@ export function dateFormat(date, fmt) {
     if (new RegExp('(' + k + ')').test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length === 1) ? (o[k]) : (('00' + o[k]).substr(('' + o[k]).length)))
   }
   return fmt
+}
+
+// 延时函数
+export function debounce(func, delay) {
+  let timer
+  return function (...args) {
+    if (timer) {
+      clearTimeout(timer)
+    }
+    timer = setTimeout(() => {
+      func(...args)
+    }, delay)
+  }
 }

@@ -82,4 +82,5 @@
 
 <style lang="scss">
   @import "common/style/form";
+
 </style>

@@ -1,4 +1,4 @@
-import {BASE_URL, dateFormat} from './utils'
+import {BASE_URL} from './utils'
 
 export default {
   install(Vue) {
@@ -169,6 +169,5 @@ export default {
         wx.switchTab({url})
       }
     }
-    Vue.prototype.$dateFormat = dateFormat
   }
 }
