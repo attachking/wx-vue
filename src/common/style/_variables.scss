@@ -1,1 +1,8 @@
 $theme: #2a63b3;
+$theme-light: lighten($theme, 30%);
+
+@mixin ellipsis{
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

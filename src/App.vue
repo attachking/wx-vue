@@ -83,4 +83,7 @@
 <style lang="scss">
   @import "common/style/form";
 
+  .red{
+    color: red;
+  }
 </style>

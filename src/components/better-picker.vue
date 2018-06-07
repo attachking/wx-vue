@@ -10,7 +10,7 @@
         </picker-view>
         <div class="btn">
           <div class="cancel between" @click="toggleShow">取消</div>
-          <div class="reset between" @click="reset">重置</div>
+          <div class="reset between" @click="handleReset" v-show="reset">重置</div>
           <div class="confirm between" @click="confirm">确定</div>
         </div>
       </div>
@@ -44,6 +44,10 @@
       last: {
         type: Boolean,
         default: false
+      },
+      reset: {
+        type: Boolean,
+        default: false
       }
     },
     data() {
@@ -59,6 +63,7 @@
       confirm() { // 确定按钮
         let name = []
         this.valuesId = []
+        this.toggleShow()
         this.columns.forEach((item, key) => {
           name.push(item[this.values[key]].name)
           this.valuesId.push(item[this.values[key]].id)
@@ -71,17 +76,16 @@
         } else {
           this.showName = name.join(' ')
         }
-        this.toggleShow()
       },
-      reset() { // 重置按钮
+      handleReset() { // 重置按钮
+        this.toggleShow()
         this.showName = this.placeholder
         this.$emit('input', '')
-        this.toggleShow()
       },
       toggleShow() {
         this.show = !this.show
       },
-      renderValuesId(value) { // 根据传来的值补全valuesId数组
+      renderValuesId(value, backName) { // 根据传来的值补全valuesId数组
         if (!this.list.length) return
         let _this = this
         value = value + ''
@@ -96,6 +100,17 @@
         }
         if (value) {
           search(value)
+          if (backName) {
+            let name = [] // 根据v-model传来的值进行回显
+            this.valuesId.forEach(item => {
+              name.push(this.list[this.list.findIndex(it => it.id === item)].name)
+            })
+            if (this.last) {
+              this.showName = name[name.length - 1]
+            } else {
+              this.showName = name.join(' ')
+            }
+          }
         } else {
           this.showName = this.placeholder
         }
@@ -103,13 +118,14 @@
       },
       handleChange(e) { // 捕获滚动选择change事件
         let value = e.mp.detail.value
+        let currentValue = ''
         for (let i = 0; i < value.length; i++) {
           if (value[i] !== this.values[i]) {
-            this.value = this.columns[i][value[i]].id
+            currentValue = this.columns[i][value[i]].id
             break
           }
         }
-        this.renderValuesId(this.value)
+        this.renderValuesId(currentValue)
       },
       renderColumns() { // 渲染每一列数据，补全values
         let columns = []
@@ -140,13 +156,13 @@
     },
     created() {
       this.showName = this.placeholder
-      this.renderValuesId(this.value)
+      this.renderValuesId(this.value, true)
       this.$watch('value', (newVal) => {
-        this.renderValuesId(newVal)
+        this.renderValuesId(newVal, true)
       })
       this.$watch('list', () => {
         setTimeout(() => {
-          this.renderValuesId(this.value)
+          this.renderValuesId(this.value, true)
         }, 20)
       })
     }

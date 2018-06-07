@@ -10,26 +10,26 @@
     <div class="selects">
       <div class="select">
         <div class="multi-picker">
-          <better-picker v-model="searchData.bca111" :list="dictionaries.positions" placeholder="职位类别" :multi="3" last></better-picker>
+          <better-picker v-model="searchData.bca111" :list="dictionaries.positions" placeholder="职位类别" :multi="3" last reset></better-picker>
         </div>
         <image src="../../../static/img/arrow-down.png" class="arrow"></image>
       </div>
       <div class="select">
         <div class="multi-picker">
-          <better-picker v-model="searchData.acb202" :list="dictionaries.cities" placeholder="工作地区" :multi="2"></better-picker>
+          <better-picker v-model="searchData.acb202" :list="dictionaries.cities" placeholder="工作地区" :multi="2" reset></better-picker>
         </div>
         <image src="../../../static/img/arrow-down.png" class="arrow"></image>
       </div>
       <div class="select">
         <div class="multi-picker">
-          <better-picker v-model="searchData.aab019" :list="dictionaries.nature" placeholder="工作性质"></better-picker>
+          <better-picker v-model="searchData.aab019" :list="dictionaries.nature" placeholder="工作性质" reset></better-picker>
         </div>
         <image src="../../../static/img/arrow-down.png" class="arrow"></image>
       </div>
     </div>
     <div class="list">
       <empty v-if="!loading && !list.length"></empty>
-      <div class="item" v-for="(val, key) in list" :key="val.acb210">
+      <a class="item" v-for="(val, key) in list" :key="val.acb210" :href="'/pages/job/main?acb210=' + val.acb210">
         <div class="img">
           <image :src="val.ccmu15"></image>
         </div>
@@ -40,7 +40,7 @@
           </div>
           <div class="pos-mid">
             <div class="pos-corp">{{val.aab004}}</div>
-            <div>{{val.bcb202}}</div>
+            <div class="pos-area">{{val.bcb202}}</div>
           </div>
           <div class="pos-bot">
             <div>招聘人数：{{val.acb21r}}</div>
@@ -48,7 +48,8 @@
             <div class="pos-salary">{{val.acc034Name}}</div>
           </div>
         </div>
-      </div>
+      </a>
+      <no-more v-if="list.length && !pageBean.hasNextPage"></no-more>
     </div>
   </div>
 </template>
@@ -59,6 +60,7 @@
   import {listMixins} from '../../../common/js/mixins'
   import {STATIC_URL, dateFormat} from '../../../common/js/utils'
   import Empty from '../../../components/empty.vue'
+  import NoMore from '../../../components/no-more.vue'
 
   export default {
     ...listMixins,
@@ -66,6 +68,13 @@
       ...mapGetters([
         'dictionaries'
       ])
+    },
+    onPageScroll(e) {
+      if (e.scrollTop > 40) {
+        this.$setTitle('最新机会')
+      } else {
+        this.$setTitle('')
+      }
     },
     data () {
       return {
@@ -84,6 +93,7 @@
       }
     },
     components: {
+      NoMore,
       Empty,
       BetterPicker
     },
@@ -91,6 +101,9 @@
       getList () {
         if (this.loading) return
         this.loading = true
+        if (this.searchData.currentPage === 1) {
+          this.$loading.bar()
+        }
         this.$post('/service/business/college/corp/newPosition/queryPositionList.xf', this.searchData).then(res => {
           this.loading = false
           this.pageBean = res.data.pageBean
@@ -99,6 +112,7 @@
             item.ccmu15 = STATIC_URL + item.ccmu15
           })
           if (this.pageBean.currentPage === 1) {
+            this.$loading.barHide()
             this.list = res.data.result
           } else {
             this.list = this.list.concat(res.data.result)
@@ -119,7 +133,7 @@
         this.getList()
       }
     },
-    created () {
+    onLoad() {
       this.getList()
       this.$watch('searchData.bca111', this.selectChange)
       this.$watch('searchData.acb202', this.selectChange)
@@ -161,18 +175,20 @@
   .selects{
     display: flex;
     font-size: 28rpx;
-    padding: 10rpx 0;
+    padding: 15rpx 0;
+    border-bottom: 1rpx solid #d9d9d9;
     .select{
       width: 33.3%;
       display: flex;
       align-items: center;
       justify-content: center;
+      &:not(:last-child){
+        border-right: 1rpx solid #d9d9d9;
+      }
     }
     .multi-picker{
       max-width: 80%;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      @include ellipsis;
     }
   }
   .arrow{
@@ -198,7 +214,7 @@
     .con{
       padding: 0 0 0 20rpx;
       box-sizing: border-box;
-      height: 150rpx;
+      min-height: 150rpx;
       flex-grow: 1;
       .pos-tit{
         display: flex;
@@ -207,6 +223,9 @@
         font-size: 28rpx;
         .pos-name{
           color: $theme;
+          font-size: 32rpx;
+          max-width: 350rpx;
+          @include ellipsis;
         }
       }
       .pos-mid{
@@ -217,9 +236,11 @@
         padding: 15rpx 0;
         .pos-corp{
           max-width: 350rpx;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
+          @include ellipsis;
+        }
+        .pos-area{
+          max-width: 200rpx;
+          @include ellipsis;
         }
       }
       .pos-bot{

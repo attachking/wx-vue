@@ -17,8 +17,10 @@ export default {
     // 页面前带有 ^ 符号的，会被编译成首页，其他页面可以选填，我们会自动把 webpack entry 里面的入口页面加进去
     pages: [
       '^pages/tabs/index/main',
-      'pages/counter/main',
-      'pages/tabs/login/main'
+      'pages/tabs/preaching/main',
+      'pages/tabs/jobFair/main',
+      'pages/tabs/login/main',
+      'pages/job/main'
     ],
     window: {
       backgroundTextStyle: 'light', // 下拉 loading 的样式，仅支持 dark/light
@@ -29,19 +31,24 @@ export default {
       onReachBottomDistance: 50 // 页面上拉触底事件触发时距页面底部距离，单位为px
     },
     tabBar: {
+      color: '#333333',
+      selectedColor: '#2a63b3',
       backgroundColor: '#f3f3f3',
       list: [{
-        color: '#2a63b3',
-        selectedColor: '#2a63b3',
         pagePath: 'pages/tabs/index/main',
         text: '最新机会',
         iconPath: 'static/img/tab-1.png',
         selectedIconPath: 'static/img/tab-1-ed.png'
       }, {
-        color: '#333333',
-        selectedColor: '#2a63b3',
-        pagePath: 'pages/counter/main',
-        text: 'counter'
+        pagePath: 'pages/tabs/preaching/main',
+        text: '宣讲会',
+        iconPath: 'static/img/tab-2.png',
+        selectedIconPath: 'static/img/tab-2-ed.png'
+      }, {
+        pagePath: 'pages/tabs/jobFair/main',
+        text: '招聘会',
+        iconPath: 'static/img/tab-3.png',
+        selectedIconPath: 'static/img/tab-3-ed.png'
       }]
     }
   }

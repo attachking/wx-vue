@@ -11,6 +11,12 @@ export default {
       },
       hide() {
         wx.hideLoading()
+      },
+      bar() {
+        wx.showNavigationBarLoading()
+      },
+      barHide() {
+        wx.hideNavigationBarLoading()
       }
     }
     Vue.prototype.$toast = function(str, icon) {
@@ -168,6 +174,9 @@ export default {
       switchTab(url) {
         wx.switchTab({url})
       }
+    }
+    Vue.prototype.$setTitle = function(title) {
+      wx.setNavigationBarTitle({title})
     }
   }
 }
