@@ -1,6 +1,8 @@
 
-export const userInfo = state => state.userInfo
+export const openid = state => state.openid
 
-export const count = state => state.count
+export const wxInfo = state => state.wxInfo
+
+export const userInfo = state => state.userInfo
 
 export const dictionaries = state => state.dictionaries

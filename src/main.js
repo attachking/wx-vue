@@ -19,8 +19,12 @@ export default {
       '^pages/tabs/index/main',
       'pages/tabs/preaching/main',
       'pages/tabs/jobFair/main',
+      'pages/tabs/me/main',
       'pages/tabs/login/main',
-      'pages/job/main'
+      'pages/job/main',
+      'pages/corporation/main',
+      'pages/preachingDetail/main',
+      'pages/jobFairDetail/main'
     ],
     window: {
       backgroundTextStyle: 'light', // 下拉 loading 的样式，仅支持 dark/light
@@ -49,6 +53,11 @@ export default {
         text: '招聘会',
         iconPath: 'static/img/tab-3.png',
         selectedIconPath: 'static/img/tab-3-ed.png'
+      }, {
+        pagePath: 'pages/tabs/me/main',
+        text: '我的',
+        iconPath: 'static/img/tab-4.png',
+        selectedIconPath: 'static/img/tab-4-ed.png'
       }]
     }
   }

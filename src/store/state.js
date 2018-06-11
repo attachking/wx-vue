@@ -1,6 +1,7 @@
 const state = {
+  openid: '',
   userInfo: {},
-  count: 0,
+  wxInfo: {},
   dictionaries: {
     cities: [], // 城市字典表
     positions: [], // 职位

@@ -1,5 +1,29 @@
-export const BASE_URL = 'https://661973658.chenjiyuan.club' // https://661973658.chenjiyuan.club http://job.zzu.edu.cn:9009 http://192.168.1.11:9009
+export const BASE_URL = 'http://192.168.1.11:9009' // https://661973658.chenjiyuan.club http://job.zzu.edu.cn:9009 http://192.168.1.11:9009
 export const STATIC_URL = 'http://job.zzu.edu.cn/p/page/'
+
+export const STORAGE_TYPE = {
+  openid: '__openid__'
+}
+
+export function post(url, data) {
+  return new Promise((resolve, reject) => {
+    wx.request({
+      url: BASE_URL + url,
+      dataType: 'json',
+      data: data,
+      method: 'POST',
+      header: {
+        'content-type': 'application/x-www-form-urlencoded; charset=UTF-8'
+      },
+      success(res) {
+        resolve(res)
+      },
+      fail(err) {
+        reject(err)
+      }
+    })
+  })
+}
 
 // 时间格式化方法
 export function dateFormat(date, fmt) {
@@ -7,8 +31,10 @@ export function dateFormat(date, fmt) {
     date = new Date(date.replace(/-/g, '/'))
   } else if (typeof date === 'number') {
     date = new Date(date)
-  } else if (!(date instanceof Date)) {
-    date = new Date()
+  } else if (date instanceof Date) {
+    // 不处理
+  } else {
+    return '--'
   }
   let o = {
     'M+': date.getMonth() + 1, // 月份

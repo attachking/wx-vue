@@ -1,59 +1,33 @@
 <template>
-  <div class="job-detail">
-    <div class="desc">
-      <div class="title-con">
-        <div class="title">{{positionInfo.cca113}}</div>
-        <div class="red">{{positionInfo.acc034Name}}</div>
+  <div class="preaching-detail">
+    <div class="ct-title">
+      <div class="ct-tit">{{info.ctTitle}}</div>
+      <a class="ct-info" :href="'/pages/corporation/main?aab001=' + corpInfo.aab001">
+        <img src="/static/img/corp.png" alt="">
+        <div class="theme">{{corpInfo.aab004}}</div>
+      </a>
+      <div class="ct-info">
+        <img src="/static/img/position.png" alt="">
+        <div>{{info.crAddress}}</div>
       </div>
-      <a class="corp-name" :href="'/pages/corporation/main?aab001=' + corpInfo.aab001">{{positionInfo.aab004}}</a>
-      <div class="row">
-        <div class="col">
-          <img src="/static/img/position.png">
-          <div>{{positionInfo.bcb202}}</div>
-        </div>
-        <div class="col">
-          <img src="/static/img/education.png">
-          <div>{{positionInfo.aac012}}</div>
-        </div>
-        <div class="col">
-          <img src="/static/img/tools.png">
-          <div>{{positionInfo.acb21iName}}</div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col">
-          <img src="/static/img/document.png">
-          <div>工作经验：{{positionInfo.acc218}}</div>
-        </div>
-        <div class="col">
-          <img src="/static/img/people.png">
-          <div>招聘人数：{{positionInfo.acb21r}}</div>
-        </div>
-        <div class="col">
-          <div>{{positionInfo.date}}</div>
-        </div>
-      </div>
-    </div>
-    <div class="card">
-      <div class="tit">
-        <img src="/static/img/welfare.png" alt="">
-        <div>福利待遇</div>
-      </div>
-      <div class="card-con">
-        <div class="welfare" v-for="(val, key) in welfare" :key="key">{{val}}</div>
+      <div class="ct-info">
+        <img src="/static/img/time.png" alt="">
+        <div>{{info.during}}</div>
       </div>
     </div>
     <div class="card">
       <div class="tit">
         <img src="/static/img/document.png" alt="">
-        <div>岗位职责</div>
+        <div>宣讲会介绍</div>
       </div>
-      <div class="card-con">{{positionInfo.cca114}}</div>
+      <div class="card-con">
+        <rich-txt :nodes="info.ctContent"></rich-txt>
+      </div>
     </div>
     <div class="card">
       <div class="tit">
-        <img src="/static/img/recommend.png" alt="">
-        <div>推荐职位</div>
+        <img src="/static/img/education.png" alt="">
+        <div>宣讲会职位</div>
       </div>
       <div class="card-con">
         <empty v-if="!loading && !list.length"></empty>
@@ -77,99 +51,108 @@
             </div>
           </div>
         </a>
+        <no-more v-if="list.length && !pageBean.hasNextPage"></no-more>
       </div>
     </div>
   </div>
 </template>
 <script>
+  import Empty from '../../components/empty.vue'
+  import NoMore from '../../components/no-more.vue'
   import {dateFormat, STATIC_URL} from '../../common/js/utils'
+  import RichTxt from '../../components/rich-txt.vue'
 
   export default {
+    components: {
+      RichTxt,
+      NoMore,
+      Empty},
+    onShareAppMessage() {
+      return {
+        title: this.info.ctTitle,
+        path: '/pages/preachingDetail/main?ctId=' + this.$root.$mp.query.ctId
+      }
+    },
     data() {
       return {
-        searchData: {
-          acb210: ''
+        search: {
+          ctId: '',
+          countsNum: 99999999
         },
+        info: {},
         corpInfo: {},
-        positionInfo: {},
-        welfare: [],
-        list: []
+        searchData: {
+          ctId: '',
+          rowsNum: 10,
+          currentPage: 1
+        },
+        pageBean: {},
+        list: [],
+        loading: false
       }
     },
     methods: {
       getDetail() {
         this.$loading.bar()
-        this.$post('/service/business/college/corp/newPosition/getPositionDetail.xf', this.searchData).then(res => {
+        this.$post('/service/business/college/careertalk/CareerTalkInfo/carrerDetail.xf', this.search).then(res => {
           this.$loading.barHide()
-          this.corpInfo = res.data.result.corpInfo || {}
-          if (res.data.result.positionInfo) {
-            res.data.result.positionInfo.date = dateFormat(res.data.result.positionInfo.ccpr05, 'yyyy-MM-dd')
-            this.welfare = (res.data.result.positionInfo.acc214name || '').split(',')
-          }
-          this.positionInfo = res.data.result.positionInfo || {}
+          res.data.result.careerTalkInfo.during = `${dateFormat(res.data.result.careerTalkInfo.ctCareerStarttime, 'yyyy-MM-dd hh:mm')} -- ${dateFormat(res.data.result.careerTalkInfo.ctCareerEndtime, 'hh:mm')}`
+          this.info = res.data.result.careerTalkInfo
+          this.corpInfo = res.data.result.corpInfo
         }).catch(() => {
           this.$loading.barHide()
         })
       },
-      getList(acb210) {
-        this.$post('/service/business/college/corp/newPosition/getRecommendJob.xf', {
-          acb210,
-          rowsNum: 5
-        }).then(res => {
+      getList() {
+        if (this.loading) return
+        this.loading = true
+        this.$post('/service/business/college/corp/newPosition/getPositionList.xf', this.searchData).then(res => {
+          this.loading = false
+          this.pageBean = res.data.pageBean
           res.data.result.forEach(item => {
             item.ccpr05 = dateFormat(item.ccpr05, 'yyyy-MM-dd')
             item.ccmu15 = STATIC_URL + item.ccmu15
           })
-          this.list = res.data.result
+          if (this.pageBean.currentPage === 1) {
+            this.list = res.data.result
+          } else {
+            this.list = this.list.concat(res.data.result)
+          }
+        }).catch(() => {
+          this.loading = false
         })
       }
     },
     onLoad() {
-      let query = this.$root.$mp.query
-      this.searchData.acb210 = query.acb210
+      this.search.ctId = this.$root.$mp.query.ctId
+      this.searchData.ctId = this.$root.$mp.query.ctId
       this.getDetail()
-      this.getList(query.acb210)
-    },
-    created() {}
+      this.getList()
+    }
   }
 </script>
 <style lang="scss">
   @import "../../common/style/variables";
 
-  .job-detail{
-    font-size: 28rpx;
+  .preaching-detail{
     background: #f3f3f3;
+    font-size: 28rpx;
   }
-  .desc{
+  .ct-title{
+    padding: 20rpx 20rpx;
     background: #fff;
-    padding: 20rpx 30rpx;
-    border-bottom: 1rpx solid #d9d9d9;
-    .title-con{
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .title{
-      font-weight: bold;
-    }
-    .corp-name{
-      color: $theme;
-      padding: 20rpx 0 0 0;
-    }
-    .row{
-      padding: 20rpx 0 0 0;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      .col{
-        display: flex;
-        align-items: center;
-        img{
-          height: 35rpx;
-          width: 35rpx;
-          margin-right: 10rpx;
-        }
-      }
+  }
+  .ct-tit{
+    font-weight: bold;
+  }
+  .ct-info{
+    display: flex;
+    align-items: center;
+    padding: 15rpx 0 0 0;
+    img{
+      width: 35rpx;
+      height: 35rpx;
+      margin-right: 10rpx;
     }
   }
   .card{
@@ -189,13 +172,6 @@
     .card-con{
       padding: 20rpx 30rpx;
     }
-  }
-  .welfare{
-    display: inline-block;
-    padding: 10rpx 15rpx;
-    border: 1rpx solid #d9d9d9;
-    border-radius: 10rpx;
-    margin: 10rpx 10rpx 0 0;
   }
   .item{
     padding: 20rpx 20rpx;

@@ -22,7 +22,7 @@
     </div>
     <div class="list">
       <empty v-if="!loading && !list.length"></empty>
-      <div class="item" v-for="(val, key) in list">
+      <a class="item" v-for="(val, key) in list" :key="val.ctId" :href="'/pages/preachingDetail/main?ctId=' + val.ctId">
         <div class="left">
           <div class="left-item">
             <div>{{val.time1}}</div>
@@ -47,7 +47,7 @@
             <div class="tip" :class="val.tipCode === 1 ? 'red' : ''">{{val.tip}}</div>
           </div>
         </div>
-      </div>
+      </a>
       <no-more v-if="list.length && !pageBean.hasNextPage"></no-more>
     </div>
   </div>
@@ -161,9 +161,11 @@
         })
       }
     },
-    created() {
+    onLoad() {
       this.getCalendar()
       this.getList()
+    },
+    created() {
       this.$watch('searchData.year', (newVal) => {
         setTimeout(() => {
           this.searchData.currentPage = 1

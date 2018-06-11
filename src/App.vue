@@ -1,5 +1,5 @@
 <script>
-  import {mapMutations} from 'vuex'
+  import {mapMutations, mapActions} from 'vuex'
 
   export default {
     data() {
@@ -9,9 +9,14 @@
       }
     },
     methods: {
+      ...mapActions([
+        'pullUserInfo'
+      ]),
       ...mapMutations({
         setDictionaries: 'SET_DICTIONARIES',
-        setUserInfo: 'SET_USER_INFO'
+        setWxInfo: 'SET_WX_INFO',
+        setUserInfo: 'SET_USER_INFO',
+        setOpenid: 'SET_OPENID'
       }),
       /*
       处理后的字典表结构为[{id: '', name: '', pid: ''}]
@@ -59,31 +64,43 @@
           if (item.children && item.children.length) this.handlePositions(item.children)
         })
       },
-      getUserInfo() {
+      getWxUserInfo() {
         // 调用登录接口
         wx.login({
           success: res => {
-            console.log(res)
+            this.getOpenid(res.code)
             wx.getUserInfo({
               success: res => {
-                this.setUserInfo(res.userInfo)
+                this.setWxInfo(res.userInfo)
               }
             })
+          }
+        })
+      },
+      getOpenid(jsCode) {
+        this.$post('/service/business/college/login/account/getWechatOpenId.xf', {jsCode}).then(res => {
+          if (res.data.result.openid) {
+            this.setOpenid(res.data.result.openid)
+            this.pullUserInfo()
           }
         })
       }
     },
     created () {
       this.getDictionaries()
-      this.getUserInfo()
+      this.getWxUserInfo()
     }
   }
 </script>
 
 <style lang="scss">
+  @import "common/style/variables";
   @import "common/style/form";
 
   .red{
     color: red;
+  }
+  .theme{
+    color: $theme;
   }
 </style>

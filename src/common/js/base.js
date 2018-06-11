@@ -1,4 +1,5 @@
-import {BASE_URL} from './utils'
+import {BASE_URL, post} from './utils'
+import store from '../../store'
 
 export default {
   install(Vue) {
@@ -72,25 +73,18 @@ export default {
       })
     }
     Vue.prototype.$post = function(url, data) {
-      return new Promise((resolve, reject) => {
-        wx.request({
-          url: BASE_URL + url,
-          dataType: 'json',
-          data: data,
-          method: 'POST',
-          header: {
-            'content-type': 'application/x-www-form-urlencoded; charset=UTF-8'
-          },
-          success(res) {
-            resolve(res)
-          },
-          fail(err) {
-            reject(err)
-          }
-        })
-      })
+      return post(url, Object.assign({}, {
+        _token: store.state.openid || '',
+        userId: store.state.userInfo.uid || '',
+        ccmu17: store.state.userInfo.ccmu17 || ''
+      }, data))
     }
     Vue.prototype.$upload = function({url, filePath, name, formData}) {
+      formData = Object.assign({}, {
+        _token: store.state.openid || '',
+        userId: store.state.userInfo.uid || '',
+        ccmu17: store.state.userInfo.ccmu17 || ''
+      }, formData)
       return new Promise((resolve, reject) => {
         wx.uploadFile({
           url: BASE_URL + url,
@@ -177,6 +171,32 @@ export default {
     }
     Vue.prototype.$setTitle = function(title) {
       wx.setNavigationBarTitle({title})
+    }
+    Vue.prototype.$storage = {
+      set(key, value) {
+        try {
+          wx.setStorageSync(key, value)
+        } catch (e) {}
+      },
+      get(key) {
+        let value
+        try {
+          value = wx.getStorageSync(key)
+        } catch (e) {
+          value = ''
+        }
+        return value
+      },
+      remove(key) {
+        try {
+          wx.removeStorageSync(key)
+        } catch (e) {}
+      },
+      clear() {
+        try {
+          wx.clearStorageSync()
+        } catch (e) {}
+      }
     }
   }
 }
