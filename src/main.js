@@ -24,7 +24,8 @@ export default {
       'pages/job/main',
       'pages/corporation/main',
       'pages/preachingDetail/main',
-      'pages/jobFairDetail/main'
+      'pages/jobFairDetail/main',
+      'pages/student/recommend/main' // 推荐职位
     ],
     window: {
       backgroundTextStyle: 'light', // 下拉 loading 的样式，仅支持 dark/light

@@ -1,5 +1,5 @@
 export const BASE_URL = 'http://192.168.1.11:9009' // https://661973658.chenjiyuan.club http://job.zzu.edu.cn:9009 http://192.168.1.11:9009
-export const STATIC_URL = 'http://job.zzu.edu.cn/p/page/'
+export const STATIC_URL = 'http://192.168.1.11:8118/zzu/p/page/'
 
 export const STORAGE_TYPE = {
   openid: '__openid__'

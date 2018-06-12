@@ -96,11 +96,38 @@
 <style lang="scss">
   @import "common/style/variables";
   @import "common/style/form";
+  @import "../static/font/iconfont.css";
 
   .red{
     color: red;
   }
   .theme{
     color: $theme;
+  }
+  .form-list{
+    display: flex;
+    padding: 20rpx 20rpx;
+    align-items: center;
+    .form-list-label{
+      display: flex;
+      align-items: center;
+      .iconfont{
+        margin-right: 10rpx;
+        font-size: 40rpx;
+      }
+    }
+    .form-list-right{
+      flex: 1;
+    }
+    .form-list-icon{
+      padding-left: 10rpx;
+      .iconfont{
+        font-size: 40rpx;
+        color: #666;
+      }
+    }
+    &:not(:last-child){
+      border-bottom: 1rpx solid #d9d9d9;
+    }
   }
 </style>

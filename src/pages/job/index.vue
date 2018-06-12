@@ -13,7 +13,7 @@
         </div>
         <div class="col">
           <img src="/static/img/education.png">
-          <div>{{positionInfo.aac012}}</div>
+          <div>{{positionInfo.aac012 || '--'}}</div>
         </div>
         <div class="col">
           <img src="/static/img/tools.png">
